@@ -1062,6 +1062,14 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
                     datepicker_div.css({'top': 0, 'left': 0, 'position': 'relative'});
                     $(g.cEdit).append(datepicker_div);
 
+                    $input_field.on('keydown', function (e) {
+                        if (e.which == 13) {
+                            // post on pressing "Enter"
+                            e.preventDefault();
+                            g.saveOrPostEditedCell();
+                        }
+                    });
+
                     // cancel any click on the datepicker element
                     $editArea.find('> *').click(function (e) {
                         e.stopPropagation();
