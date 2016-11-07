@@ -983,7 +983,7 @@ class ExportSqlTest extends PMATestCase
         $dbi->expects($this->once())
             ->method('numRows')
             ->with('res')
-            ->will($this->returnValue(2));
+            ->will($this->returnValue(1));
 
         $dbi->expects($this->any())
             ->method('fetchValue')
@@ -1026,14 +1026,12 @@ class ExportSqlTest extends PMATestCase
             ") ENGINE=InnoDB AUTO_INCREMENT=16050 DEFAULT CHARSET=utf8\n"
         );
 
-        $dbi->expects($this->exactly(2))
+        $dbi->expects($this->exactly(1))
             ->method('fetchRow')
-            ->with('res')
             ->will(
                 $this->returnValueMap(
                     array(
-                        array('res', $row),
-                        array('res', null)
+                        array('res', $row)
                     )
                 )
             );
@@ -1518,14 +1516,9 @@ class ExportSqlTest extends PMATestCase
 
         $dbi->expects($this->exactly(2))
             ->method('fetchRow')
-            ->with('res')
-            ->will(
-                $this->returnValueMap(
-                    array(
-                        array('res', array(null, 'test', '10', '6', "\x00\x0a\x0d\x1a")),
-                        array('res', null)
-                    )
-                )
+            ->willReturnOnConsecutiveCalls(
+                array(null, 'test', '10', '6', "\x00\x0a\x0d\x1a"),
+                null
             );
         $dbi->expects($this->any())->method('escapeString')
             ->will($this->returnArgument(0));
@@ -1654,13 +1647,9 @@ class ExportSqlTest extends PMATestCase
 
         $dbi->expects($this->exactly(2))
             ->method('fetchRow')
-            ->will(
-                $this->returnValueMap(
-                    array(
-                        array('res', array(null, null)),
-                        array('res', null)
-                    )
-                )
+            ->willReturnOnConsecutiveCalls(
+                array(null, null),
+                null
             );
 
         $_table = $this->getMockBuilder('PMA\libraries\Table')
@@ -1740,6 +1729,7 @@ class ExportSqlTest extends PMATestCase
         $GLOBALS['crlf'] = "\n";
         $oldVal = isset($GLOBALS['sql_compatibility']) ? $GLOBALS['sql_compatibility'] : '';
         $GLOBALS['sql_compatibility'] = 'NONE';
+        $GLOBALS['sql_backquotes'] = true;
 
         ob_start();
         $this->assertTrue(
