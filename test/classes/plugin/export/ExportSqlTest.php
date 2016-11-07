@@ -696,18 +696,8 @@ class ExportSqlTest extends PMATestCase
      *
      * @return void
      */
-    public function testExportEventsWithNewerMySQLVersion()
+    public function testExportEvents()
     {
-        $restoreMySQLVersion = "PMANORESTORE";
-
-        if (! PMA_HAS_RUNKIT) {
-            $this->markTestSkipped(
-                'Cannot redefine constant. Missing runkit extension'
-            );
-        } else {
-            $restoreMySQLVersion = PMA_MYSQL_INT_VERSION;
-            runkit_constant_redefine('PMA_MYSQL_INT_VERSION', 50101);
-        }
 
         $GLOBALS['crlf'] = "\n";
         $GLOBALS['sql_structure_or_data'] = 'structure';
@@ -729,8 +719,10 @@ class ExportSqlTest extends PMATestCase
             ->method('getDefinition')
             ->will(
                 $this->returnValueMap(
-                    array('db', 'EVENT', 'f1', 'f1event'),
-                    array('db', 'EVENT', 'f2', 'f2event')
+                    array(
+                        array('db', 'EVENT', 'f1', null, 'f1event'),
+                        array('db', 'EVENT', 'f2', null, 'f2event')
+                    )
                 )
             );
         $dbi->expects($this->any())->method('escapeString')
@@ -763,10 +755,6 @@ class ExportSqlTest extends PMATestCase
             "f2event$$\n",
             $result
         );
-
-        if ($restoreMySQLVersion !== "PMANORESTORE") {
-            runkit_constant_redefine('PMA_MYSQL_INT_VERSION', $restoreMySQLVersion);
-        }
     }
 
     /**
@@ -774,19 +762,8 @@ class ExportSqlTest extends PMATestCase
      *
      * @return void
      */
-    public function testExportDBFooterWithOlderMySQLVersion()
+    public function testExportDBFooter()
     {
-        $restoreMySQLVersion = "PMANORESTORE";
-
-        if (! PMA_HAS_RUNKIT) {
-            $this->markTestSkipped(
-                'Cannot redefine constant. Missing runkit extension'
-            );
-        } else {
-            $restoreMySQLVersion = PMA_MYSQL_INT_VERSION;
-            runkit_constant_redefine('PMA_MYSQL_INT_VERSION', 50100);
-        }
-
         $GLOBALS['crlf'] = "\n";
         $GLOBALS['sql_constraints'] = "SqlConstraints";
         $GLOBALS['sql_structure_or_data'] = 'structure';
@@ -810,10 +787,6 @@ class ExportSqlTest extends PMATestCase
             'SqlConstraints',
             $result
         );
-
-        if ($restoreMySQLVersion !== "PMANORESTORE") {
-            runkit_constant_redefine('PMA_MYSQL_INT_VERSION', $restoreMySQLVersion);
-        }
     }
 
     /**
