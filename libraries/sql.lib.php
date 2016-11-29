@@ -108,6 +108,10 @@ function PMA_getSqlWithLimitClause(&$analyzed_sql_results)
  */
 function PMA_resultSetHasJustOneTable($fields_meta)
 {
+    if ($fields_meta === null) {
+        return false;
+    }
+
     $just_one_table = true;
     $prev_table = '';
     foreach ($fields_meta as $one_field_meta) {
@@ -136,6 +140,10 @@ function PMA_resultSetHasJustOneTable($fields_meta)
  */
 function PMA_resultSetContainsUniqueKey($db, $table, $fields_meta)
 {
+    if ($fields_meta === null) {
+        return false;
+    }
+
     $resultSetColumnNames = array();
     foreach ($fields_meta as $oneMeta) {
         $resultSetColumnNames[] = $oneMeta->name;
@@ -1843,6 +1851,7 @@ function PMA_getQueryResponseForResultsReturned($result, $analyzed_sql_results,
         // script has exited at this point
     }
 
+    $fields_meta = null;
     // Gets the list of fields properties
     if (isset($result) && $result) {
         $fields_meta = $GLOBALS['dbi']->getFieldsMeta($result);
