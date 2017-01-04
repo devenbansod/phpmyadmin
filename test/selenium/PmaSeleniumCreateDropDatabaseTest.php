@@ -55,6 +55,14 @@ class PMA_SeleniumCreateDropDatabaseTest extends PMA_SeleniumBase
         $element = $this->waitForElement('byLinkText', 'Database: ' . $this->database_name);
 
         $this->_dropDatabase();
+
+        $this->assertEquals(
+            false,
+            $this->isElementPresent(
+                "byCssSelector",
+                "input[name='selected_dbs[]'][value='" . $this->database_name . "']"
+            )
+        );
     }
 
     /**
