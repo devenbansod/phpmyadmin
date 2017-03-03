@@ -51,8 +51,16 @@ class PMA_SeleniumCreateDropDatabaseTest extends PMA_SeleniumBase
         $element->value($this->database_name);
 
         $this->byId("buttonGo")->click();
-
         $element = $this->waitForElement('byLinkText', 'Database: ' . $this->database_name);
+
+        // Verify that the database is added
+        $isPresent = $this->isElementPresent(
+            'byLinkText', 'Database: ' . $this->database_name
+        );
+        $this->assertEquals(
+            $isPresent,
+            true
+        );
 
         $this->_dropDatabase();
     }
@@ -84,6 +92,13 @@ class PMA_SeleniumCreateDropDatabaseTest extends PMA_SeleniumBase
 
         $this->waitForElement(
             "byCssSelector", "span.ajax_notification div.success"
+        );
+
+        // Verify that the database is dropped
+        $isPresent = $this->isElementPresent('byLinkText', 'Database: ' . $this->database_name);
+        $this->assertEquals(
+            $isPresent,
+            false
         );
     }
 }

@@ -28,9 +28,11 @@ class PMA_SeleniumDbOperationsTest extends PMA_SeleniumBase
     {
         $this->login();
         $this->waitForElement('byLinkText', $this->database_name)->click();
-        $this->waitForElement("byLinkText", "Structure");
+
+        $this->waitForElementNotPresent('byId', 'ajax_message_num_1');
+        $this->waitForElement("byPartialLinkText", "Structure");
         $this->expandMore();
-        $this->waitForElement("byLinkText", "Operations")->click();
+        $this->waitForElement("byPartialLinkText", "Operations")->click();
         $this->waitForElement(
             "byXPath", "//legend[contains(., 'Rename database to')]"
         );
@@ -46,6 +48,8 @@ class PMA_SeleniumDbOperationsTest extends PMA_SeleniumBase
     public function testDbComment()
     {
         $this->skipIfNotPMADB();
+        $this->setUpPage();
+
         $this->byName("comment")->value("comment_foobar");
         $this->byCssSelector(
             "form#formDatabaseComment input[type='submit']"
@@ -69,14 +73,16 @@ class PMA_SeleniumDbOperationsTest extends PMA_SeleniumBase
     public function testRenameDB()
     {
         $new_db_name = $this->database_name . 'rename';
-        $this->byCssSelector("form#rename_db_form input[name=newname]")
-            ->value($new_db_name);
+
+        $this->scrollIntoView('copy_db_form');
+        $newNameField = $this->waitForElement('byCssSelector', "form#rename_db_form input[name=newname]");
+
+        $newNameField->clear();
+        $newNameField->value($new_db_name);
 
         $this->byCssSelector("form#rename_db_form input[type='submit']")->click();
 
-        $this->waitForElement(
-            "byXPath", "//button[contains(., 'OK')]"
-        )->click();
+        $this->waitForElement("byCssSelector", "button.submitOK")->click();
 
         $this->waitForElement(
             "byXPath",
@@ -106,16 +112,19 @@ class PMA_SeleniumDbOperationsTest extends PMA_SeleniumBase
     public function testCopyDb()
     {
         $new_db_name = $this->database_name . 'copy';
-        $this->byCssSelector("form#copy_db_form input[name=newname]")
-            ->value($new_db_name);
+
+        $this->scrollIntoView('copy_db_form');
+        $newNameField = $this->waitForElement('byCssSelector', "form#copy_db_form input[name=newname]");
+
+        $newNameField->clear();
+        $newNameField->value($new_db_name);
 
         $this->byCssSelector("form#copy_db_form input[type='submit']")->click();
 
-        $this->waitForElement(
-            "byXPath",
-            "//div[@class='success' and contains(., 'Database "
-            . $this->database_name
-            . " has been copied to $new_db_name')]"
+        $success = $this->waitForElement("byCssSelector", "div.success");
+        $this->assertContains(
+            'Database ' . $this->database_name . ' has been copied to ' . $new_db_name,
+            $success->text()
         );
 
         $result = $this->dbQuery(

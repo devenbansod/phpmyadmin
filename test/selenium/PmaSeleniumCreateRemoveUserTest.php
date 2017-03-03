@@ -91,7 +91,11 @@ class PMA_SeleniumCreateRemoveUserTest extends PMA_SeleniumBase
         $this->scrollIntoView('addUsersForm_checkall');
         $this->byId("addUsersForm_checkall")->click();
 
-        $this->waitForElement('byId', "adduser_submit")->click();
+        $this->waitForElement('byId', 'adduser_submit');
+        $this->scrollIntoView('adduser_submit');
+
+        // Submit the form
+        $this->keys(PHPUnit_Extensions_Selenium2TestCase_Keys::ENTER);
 
         $success = $this->waitForElement("byCssSelector", "div.success");
         $this->assertContains('You have added a new user', $success->text());
