@@ -257,12 +257,13 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
     /**
      * perform a login
      *
-     * @param string $username Username
-     * @param string $password Password
+     * @param string  $username     Username
+     * @param string  $password     Password
+     * @param boolean $allow_failed If failed login is possible
      *
      * @return void
      */
-    public function login($username = '', $password = '')
+    public function login($username = '', $password = '', $allow_failed = false)
     {
         if ($username == '') {
             $username = $GLOBALS['TESTSUITE_USER'];
@@ -287,8 +288,10 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
         $passwordField->value($password);
         $this->byId('input_go')->click();
 
-        // Wait for sucessful login
-        $this->waitForElementNotPresent('byName', 'login_form');
+        if (! $allow_failed) {
+            // Wait for sucessful login
+            $this->waitForElementNotPresent('byName', 'login_form');
+        }
     }
 
     /**
