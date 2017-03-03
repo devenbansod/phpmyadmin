@@ -270,6 +270,10 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
         if ($password == '') {
             $password = $GLOBALS['TESTSUITE_PASSWORD'];
         }
+
+        // Always try to maximize the window
+        $this->prepareSession()->currentWindow()->maximize();
+
         $this->url('');
         $this->waitForElementNotPresent('byId', 'cfs-style');
 
@@ -282,6 +286,9 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
         $passwordField = $this->byId('input_password');
         $passwordField->value($password);
         $this->byId('input_go')->click();
+
+        // Wait for sucessful login
+        $this->waitForElementNotPresent('byName', 'login_form');
     }
 
     /**
