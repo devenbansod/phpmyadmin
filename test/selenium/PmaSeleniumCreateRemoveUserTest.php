@@ -69,9 +69,10 @@ class PMA_SeleniumCreateRemoveUserTest extends PMA_SeleniumBase
 
         $this->scrollIntoView('add_user_anchor');
         $this->waitForElement('byId', 'usersForm');
-        usleep(1000000);
-        $this->waitForElement("byId", "add_user_anchor")->click();
-        usleep(1000000);
+
+        $ele = $this->waitForElement("byId", "add_user_anchor");
+        $this->moveto($ele);
+        $ele->click();
 
         $this->waitForElementNotPresent('byId', 'ajax_message_num_1');
         $userField = $this->waitForElement("byName", "username");
