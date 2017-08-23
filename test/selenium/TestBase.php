@@ -603,6 +603,24 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
             "byXPath",
             "//th//a[contains(., '$table')]"
         )->click();
+
+        $this->waitUntil(function() {
+            if ($this->isElementPresent('byCssSelector', 'ajax_message_num_1')
+                || !$this->isElementPresent(
+                    "byXPath",
+                    "//th//a[contains(., 'test_table')]"
+                )
+            ) {
+                return true;
+            }
+
+            // click did not go through, re-click
+            $this->waitForElement(
+                "byXPath",
+                "//th//a[contains(., 'test_table')]"
+            )->click();
+        }, 5000);
+
         $this->waitForElementNotPresent('byCssSelector', 'ajax_message_num_1');
 
         // Let table resize (uses JS)
@@ -639,6 +657,24 @@ abstract class PMA_SeleniumBase extends PHPUnit_Extensions_Selenium2TestCase
             'byXPath',
             '//tr[(contains(@class, "db-row"))]//a[contains(., "' . $this->database_name . '")]'
         )->click();
+
+        $this->waitUntil(function() {
+            if ($this->isElementPresent('byCssSelector', 'ajax_message_num_1')
+                || !$this->isElementPresent(
+                    'byXPath',
+                    '//tr[(contains(@class, "db-row"))]//a[contains(., "' . $this->database_name . '")]'
+                )
+            ) {
+                return true;
+            }
+
+            // click did not go through, re-click
+            $this->waitForElement(
+                'byXPath',
+                '//tr[(contains(@class, "db-row"))]//a[contains(., "' . $this->database_name . '")]'
+            )->click();
+        }, 5000);
+
         $this->waitForElementNotPresent('byCssSelector', 'ajax_message_num_1');
 
         // Wait for it to load
